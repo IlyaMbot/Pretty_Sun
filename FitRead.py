@@ -22,8 +22,7 @@ filenames = sorted(filenames, key=os.path.basename)
 
 for filename in filenames[0:1]:
 	image_file = fits.open(filename)
-	print(image_file[0].header)
-	data = image_file[1].data
-	print(np.shape(data))
+	print(image_file[1].header)
+	print(image_file.info())
 	#plot_picture(data)
 
