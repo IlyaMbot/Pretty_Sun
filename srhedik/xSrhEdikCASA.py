@@ -1204,32 +1204,7 @@ class SrhEdik(QtWidgets.QMainWindow):#MainWindow):
         self.fringeStoppingButton.setCheckable(True)
         self.fringeStoppingButton.setChecked(False)
         self.fringeStoppingButton.clicked.connect(self.onFringeStopping)
-        
-#        self.ewAntenna = QtWidgets.QSpinBox(self, prefix='EW_ant ')
-#        self.ewAntenna.setRange(49,80)
-#        self.ewAntenna.setStyle(CustomStyle())
-#        self.ewAntenna.valueChanged.connect(self.onEwAntennaChanged)
-#
-#        self.ewLcpAntennaPhase = QtWidgets.QSpinBox(self, prefix = 'LCP phase ')
-#        self.ewLcpAntennaPhase.setRange(-180,180)
-#        self.ewLcpAntennaPhase.setStyle(CustomStyle())
-#        self.ewLcpAntennaPhase.valueChanged.connect(self.onEwLcpAntennaPhaseChanged)
-#
-#        self.sLcpAntennaPhase = QtWidgets.QSpinBox(self, prefix = 'LCP phase ')
-#        self.sLcpAntennaPhase.setRange(-180,180)
-#        self.sLcpAntennaPhase.setStyle(CustomStyle())
-#        self.sLcpAntennaPhase.valueChanged.connect(self.onSLcpAntennaPhaseChanged)
-#
-#        self.ewRcpAntennaPhase = QtWidgets.QSpinBox(self, prefix = 'RCP phase ')
-#        self.ewRcpAntennaPhase.setRange(-180,180)
-#        self.ewRcpAntennaPhase.setStyle(CustomStyle())
-#        self.ewRcpAntennaPhase.valueChanged.connect(self.onEwRcpAntennaPhaseChanged)
-#
-#        self.sRcpAntennaPhase = QtWidgets.QSpinBox(self, prefix = 'RCP phase ')
-#        self.sRcpAntennaPhase.setRange(-180,180)
-#        self.sRcpAntennaPhase.setStyle(CustomStyle())
-#        self.sRcpAntennaPhase.valueChanged.connect(self.onSRcpAntennaPhaseChanged)
-#        
+         
         self.ewAmpCoefSpin = QtWidgets.QDoubleSpinBox (self, prefix = 'EW Amp Coef ')
         self.ewAmpCoefSpin.setSingleStep(0.01)
         self.ewAmpCoefSpin.setRange(0.1,5.)
@@ -1243,12 +1218,7 @@ class SrhEdik(QtWidgets.QMainWindow):#MainWindow):
         self.sAmpCoefSpin.valueChanged.connect(self.onSAmpCoefChanged)
         self.sAmpCoefSpin.setValue(1.)
         self.sAmpCoefSpin.setStyle(CustomStyle())
-#        
-#        self.sAntenna = QtWidgets.QSpinBox(self, prefix='S_ant ')
-#        self.sAntenna.setRange(177,192)
-#        self.sAntenna.setStyle(CustomStyle())
-#        self.sAntenna.valueChanged.connect(self.onSAntennaChanged)     
-
+      
         self.autoFlagButton = QtWidgets.QPushButton('Auto', self)
         self.autoFlagButton.clicked.connect(self.onAutoFlag)
         
@@ -1763,7 +1733,7 @@ class SrhEdik(QtWidgets.QMainWindow):#MainWindow):
             ms2Table.initFeedTable(self.srhFits, self.currentFrequencyChannel)
             ms2Table.initObservationTable(self.srhFits)
         except:
-            print("SOMETHING IS WRONG")
+            print("SOMETHING'S WRONG")
         
     def onSaveAs(self):
         saveName, _ = QtWidgets.QFileDialog.getSaveFileName(self)        
