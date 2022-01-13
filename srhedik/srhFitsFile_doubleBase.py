@@ -431,9 +431,14 @@ class SrhFitsFile():
         try:
             self.hduList = fits.open(name);
             self.isOpen = True;
+            # fitsDate = self.hduList[0].header['DATE-OBS'].split('/')
+            # fitsTime = self.hduList[0].header['TIME-OBS'].split('.')
             fitsDate = self.hduList[0].header['DATE-OBS'].split('/')
+            print(fitsDate)
             fitsTime = self.hduList[0].header['TIME-OBS'].split('.')
+            print(fitsTime)
             fitsTime = fitsTime[0].split(':')
+            print(fitsTime[0], fitsTime[1], fitsTime[2])
             self.dateObs = fitsDate[0] + '-' + fitsDate[1] + '-' + fitsDate[2] + 'T' \
                             + fitsTime[0] + ':' + fitsTime[1] + ':' + fitsTime[2]
             self.antennaNumbers = self.hduList[2].data['ANTENNA'];

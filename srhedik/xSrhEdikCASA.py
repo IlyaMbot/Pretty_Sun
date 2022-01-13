@@ -4,10 +4,9 @@
 Created on Wed May  2 10:36:23 2018
 
 @author: sergey
-@mod: IlyaMbot
 """
 
-import sys
+import sys;
 from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtWidgets import QFileDialog, QTabWidget, QVBoxLayout, QGridLayout, QTableWidget, QTableWidgetItem, QProxyStyle, QStyle
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -16,22 +15,19 @@ import numpy as NP
 from srhFitsFile_doubleBase import SrhFitsFile
 from skimage.transform import warp, AffineTransform
 from astropy.io import fits
-import astropy
 from astropy.time import Time, TimeDelta
 #import casacore.tables as T
 #from casacore.images import image
 import base2uvw as bl2uvw
+#import srhMS2
 from mpl_toolkits.mplot3d import Axes3D
+import pylab as PL
 from scipy.signal import argrelextrema
 from sunpy import coordinates
 import matplotlib.animation as animation
 import matplotlib.colors
 import os
-import srhMS2
 import casaDescDicts as desc
-import pdb
-
-astropy.utils.iers.Conf.auto_download = False
 
 cdict = {'red': ((0.0, 0.0, 0.0),
                  (0.2, 0.0, 0.0),
@@ -55,18 +51,18 @@ cdict = {'red': ((0.0, 0.0, 0.0),
                  (0.9, 0.0, 0.0),
                  (1.0, 1.0, 1.0))}
 
-my_cmap = matplotlib.colors.LinearSegmentedColormap('my_colormap', cdict, 256)
+my_cmap = matplotlib.colors.LinearSegmentedColormap('my_colormap',cdict,256)
 
 class CustomStyle(QProxyStyle):
     def styleHint(self, hint, option=None, widget=None, returnData=None):
         if hint == QStyle.SH_SpinBox_KeyPressAutoRepeatRate:
-            return 10**9
+            return 10**10
         elif hint == QStyle.SH_SpinBox_ClickAutoRepeatRate:
-            return 10**9
+            return 10**10
         elif hint == QStyle.SH_SpinBox_ClickAutoRepeatThreshold:
             # You can use only this condition to avoid the auto-repeat,
             # but better safe than sorry ;-)
-            return 10**9
+            return 10**10
         else:
             return super().styleHint(hint, option, widget, returnData)
 
@@ -1120,7 +1116,7 @@ class SrhEdik(QtWidgets.QMainWindow):#MainWindow):
         
         self.amplitudeCorrectButton = QtWidgets.QPushButton('Amplitude', self)
         self.amplitudeCorrectButton.setCheckable(True)
-        self.amplitudeCorrectButton.setChecked(False)
+        self.amplitudeCorrectButton.setChecked(True)
         self.amplitudeCorrectButton.clicked.connect(self.onAmplitudeCorrect)
         
         self.doubleBaselinesPhaseButton = QtWidgets.QPushButton('Double baselines Ph', self)
@@ -1204,7 +1200,32 @@ class SrhEdik(QtWidgets.QMainWindow):#MainWindow):
         self.fringeStoppingButton.setCheckable(True)
         self.fringeStoppingButton.setChecked(False)
         self.fringeStoppingButton.clicked.connect(self.onFringeStopping)
-         
+        
+#        self.ewAntenna = QtWidgets.QSpinBox(self, prefix='EW_ant ')
+#        self.ewAntenna.setRange(49,80)
+#        self.ewAntenna.setStyle(CustomStyle())
+#        self.ewAntenna.valueChanged.connect(self.onEwAntennaChanged)
+#
+#        self.ewLcpAntennaPhase = QtWidgets.QSpinBox(self, prefix = 'LCP phase ')
+#        self.ewLcpAntennaPhase.setRange(-180,180)
+#        self.ewLcpAntennaPhase.setStyle(CustomStyle())
+#        self.ewLcpAntennaPhase.valueChanged.connect(self.onEwLcpAntennaPhaseChanged)
+#
+#        self.sLcpAntennaPhase = QtWidgets.QSpinBox(self, prefix = 'LCP phase ')
+#        self.sLcpAntennaPhase.setRange(-180,180)
+#        self.sLcpAntennaPhase.setStyle(CustomStyle())
+#        self.sLcpAntennaPhase.valueChanged.connect(self.onSLcpAntennaPhaseChanged)
+#
+#        self.ewRcpAntennaPhase = QtWidgets.QSpinBox(self, prefix = 'RCP phase ')
+#        self.ewRcpAntennaPhase.setRange(-180,180)
+#        self.ewRcpAntennaPhase.setStyle(CustomStyle())
+#        self.ewRcpAntennaPhase.valueChanged.connect(self.onEwRcpAntennaPhaseChanged)
+#
+#        self.sRcpAntennaPhase = QtWidgets.QSpinBox(self, prefix = 'RCP phase ')
+#        self.sRcpAntennaPhase.setRange(-180,180)
+#        self.sRcpAntennaPhase.setStyle(CustomStyle())
+#        self.sRcpAntennaPhase.valueChanged.connect(self.onSRcpAntennaPhaseChanged)
+#        
         self.ewAmpCoefSpin = QtWidgets.QDoubleSpinBox (self, prefix = 'EW Amp Coef ')
         self.ewAmpCoefSpin.setSingleStep(0.01)
         self.ewAmpCoefSpin.setRange(0.1,5.)
@@ -1218,7 +1239,12 @@ class SrhEdik(QtWidgets.QMainWindow):#MainWindow):
         self.sAmpCoefSpin.valueChanged.connect(self.onSAmpCoefChanged)
         self.sAmpCoefSpin.setValue(1.)
         self.sAmpCoefSpin.setStyle(CustomStyle())
-      
+#        
+#        self.sAntenna = QtWidgets.QSpinBox(self, prefix='S_ant ')
+#        self.sAntenna.setRange(177,192)
+#        self.sAntenna.setStyle(CustomStyle())
+#        self.sAntenna.valueChanged.connect(self.onSAntennaChanged)     
+
         self.autoFlagButton = QtWidgets.QPushButton('Auto', self)
         self.autoFlagButton.clicked.connect(self.onAutoFlag)
         
@@ -1721,19 +1747,20 @@ class SrhEdik(QtWidgets.QMainWindow):#MainWindow):
         
 
     def saveAsMs2(self, saveName):
-        try:
-            ms2Table = srhMS2.SrhMs2(saveName)
-            ms2Table.initDataTable(self.srhFits, self.currentFrequencyChannel, self.ewLcpPhaseCorrection, self.ewRcpPhaseCorrection, self.sLcpPhaseCorrection, self.sRcpPhaseCorrection, phaseCorrect = self.phaseCorrect, amplitudeCorrect = self.amplitudeCorrect)
-            ms2Table.initAntennaTable(self.srhFits)
-            ms2Table.initSpectralWindowTable(self.srhFits, self.currentFrequencyChannel)
-            ms2Table.initDataDescriptionTable()
-            ms2Table.initPolarizationTable()
-            ms2Table.initSourceTable()
-            ms2Table.initFieldTable()
-            ms2Table.initFeedTable(self.srhFits, self.currentFrequencyChannel)
-            ms2Table.initObservationTable(self.srhFits)
-        except:
-            print("SOMETHING'S WRONG")
+#        try:
+        import srhMS2
+        ms2Table = srhMS2.SrhMs2(saveName)
+        ms2Table.initDataTable(self.srhFits, self.currentFrequencyChannel, self.ewLcpPhaseCorrection, self.ewRcpPhaseCorrection, self.sLcpPhaseCorrection, self.sRcpPhaseCorrection, phaseCorrect = self.phaseCorrect, amplitudeCorrect = self.amplitudeCorrect)
+        ms2Table.initAntennaTable(self.srhFits)
+        ms2Table.initSpectralWindowTable(self.srhFits, self.currentFrequencyChannel)
+        ms2Table.initDataDescriptionTable()
+        ms2Table.initPolarizationTable()
+        ms2Table.initSourceTable()
+        ms2Table.initFieldTable()
+        ms2Table.initFeedTable(self.srhFits, self.currentFrequencyChannel)
+        ms2Table.initObservationTable(self.srhFits)
+#        except:
+#            pass
         
     def onSaveAs(self):
         saveName, _ = QtWidgets.QFileDialog.getSaveFileName(self)        
